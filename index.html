@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Turn a photograph or text into a buildable domino mosaic, preview the exact grid, and export a high-resolution plan."
+    />
+    <meta name="theme-color" content="#f3f0e8" />
+    <title>Mosaic Studio 21</title>
+    <link rel="icon" type="image/png" href="domino-polished.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#studio">Skip to Mosaic Studio 21</a>
+
+    <header class="site-header">
+      <div class="page-width header-inner">
+        <a class="brand" href="#top" aria-label="Mosaic Studio 21 home">
+          <img class="brand-image" src="domino-polished.png" width="38" height="38" alt="" />
+          <span>Mosaic<br />Studio 21</span>
+        </a>
+
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="#studio">Studio</a>
+          <a href="#how-it-works">How it works</a>
+        </nav>
+
+        <span class="header-badge"><span></span> Runs in your browser</span>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero page-width" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span>New</span> A blueprint for every piece</p>
+          <h1 id="hero-title">Turn pixels<br />into <em>pieces.</em></h1>
+          <p class="hero-lede">
+            Upload a photo or type a message and translate it into a buildable, seven-tone domino
+            mosaic—complete with exact dimensions and a high-resolution export.
+          </p>
+          <div class="hero-actions">
+            <button class="button button-dark" id="heroUploadButton" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" />
+              </svg>
+              Choose a photo
+            </button>
+            <button class="text-link text-link-button" id="heroTextButton" type="button">Use text instead <span>↓</span></button>
+          </div>
+        </div>
+
+        <div class="hero-art" aria-hidden="true">
+          <div class="art-note note-top">7 tonal values</div>
+          <div class="display-domino domino-a">
+            <div class="display-face pips-2"><i></i><i></i></div>
+            <div class="display-face pips-5"><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="display-domino domino-b">
+            <div class="display-face pips-1"><i></i></div>
+            <div class="display-face pips-4"><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="display-domino domino-c">
+            <div class="display-face pips-6"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="display-face pips-3"><i></i><i></i><i></i></div>
+          </div>
+          <div class="art-note note-bottom">0–6 pips</div>
+        </div>
+      </section>
+
+      <section class="studio-section" id="studio" aria-labelledby="studio-title" tabindex="-1">
+        <div class="page-width">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">01 / The studio</p>
+              <h2 id="studio-title">Build your mosaic</h2>
+            </div>
+            <p>Your source never leaves this device.</p>
+          </div>
+
+          <div class="studio-layout">
+            <aside class="control-panel" aria-label="Mosaic settings">
+              <div class="panel-heading">
+                <span class="step-number">1</span>
+                <div>
+                  <h3 id="sourceHeading">Choose a source</h3>
+                  <p id="sourceHeadingMeta">Upload an image or type your own text</p>
+                </div>
+              </div>
+
+              <fieldset class="control-group source-mode-control">
+                <legend class="visually-hidden">Source type</legend>
+                <div class="segmented-control two-up">
+                  <label>
+                    <input type="radio" name="sourceMode" value="image" checked />
+                    <span>
+                      <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="3" width="15" height="14" rx="2" /><circle cx="7" cy="7.5" r="1.5" /><path d="m4.5 15 4-4 2.5 2.5 2-2 2.5 3.5" /></svg>
+                      Image
+                    </span>
+                  </label>
+                  <label>
+                    <input type="radio" name="sourceMode" value="text" />
+                    <span>
+                      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4h12M10 4v12M6.5 16h7" /></svg>
+                      Text
+                    </span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <div class="source-panel" id="imageSourcePanel">
+                <label class="drop-zone" id="dropZone" for="imageUpload">
+                  <input
+                    class="visually-hidden file-input"
+                    type="file"
+                    id="imageUpload"
+                    accept="image/jpeg,image/png,image/webp"
+                    aria-describedby="uploadHint uploadError"
+                  />
+                  <span class="drop-empty" id="dropEmpty">
+                    <span class="upload-icon">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 15V4m0 0L8 8m4-4 4 4M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />
+                      </svg>
+                    </span>
+                    <span><strong>Drop your photo here</strong><small>or click to browse files</small></span>
+                  </span>
+                  <span class="drop-preview" id="dropPreview" hidden>
+                    <img id="uploadThumbnail" alt="" />
+                    <span class="file-meta">
+                      <strong id="fileName">image.jpg</strong>
+                      <small id="fileDetails">1200 × 800 · 1.2 MB</small>
+                    </span>
+                    <span class="change-label">Change</span>
+                  </span>
+                </label>
+                <p class="field-hint" id="uploadHint">JPG, PNG or WebP · max 20 MB. Strong subjects work best.</p>
+                <p class="field-error" id="uploadError" role="alert" hidden></p>
+              </div>
+
+              <div class="source-panel text-source-panel" id="textSourcePanel" hidden>
+                <label for="textSource">Text to turn into dominoes</label>
+                <div class="text-input-wrap">
+                  <textarea id="textSource" rows="3" maxlength="60" placeholder="TYPE SOMETHING" aria-describedby="textHint textCount"></textarea>
+                  <span id="textCount" aria-live="off">0 / 60</span>
+                </div>
+                <p class="field-hint" id="textHint">Short phrases work best. Use 150+ pieces for readable letters; press Enter to control line breaks.</p>
+              </div>
+
+              <div class="panel-rule"></div>
+
+              <div class="panel-heading compact">
+                <span class="step-number">2</span>
+                <div>
+                  <h3>Mosaic settings</h3>
+                  <p>Choose your scale and finish</p>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <div class="label-row">
+                  <label for="dominoBudget">Maximum dominoes</label>
+                  <div class="number-suffix">
+                    <input id="budgetNumber" type="number" min="20" max="3000" step="10" value="800" inputmode="numeric" aria-label="Maximum dominoes, numeric value" />
+                    <span>pcs</span>
+                  </div>
+                </div>
+                <input id="dominoBudget" class="range-control" type="range" min="20" max="3000" step="10" value="800" />
+                <div class="range-labels" aria-hidden="true"><span>20</span><span>3,000</span></div>
+                <p class="field-hint">We preserve the image shape with a complete grid within 5% of this budget.</p>
+              </div>
+
+              <fieldset class="control-group">
+                <legend>Piece orientation</legend>
+                <div class="segmented-control three-up">
+                  <label><input type="radio" name="orientation" value="auto" checked /><span>Auto</span></label>
+                  <label><input type="radio" name="orientation" value="vertical" /><span><b class="orientation-icon vertical"></b>Vertical</span></label>
+                  <label><input type="radio" name="orientation" value="horizontal" /><span><b class="orientation-icon horizontal"></b>Horizontal</span></label>
+                </div>
+              </fieldset>
+
+              <fieldset class="control-group">
+                <legend>Domino finish</legend>
+                <div class="palette-options">
+                  <label class="palette-choice">
+                    <input type="radio" name="palette" value="ivory" checked />
+                    <span class="palette-swatch ivory"><i></i></span>
+                    <span>Ivory</span>
+                  </label>
+                  <label class="palette-choice">
+                    <input type="radio" name="palette" value="obsidian" />
+                    <span class="palette-swatch obsidian"><i></i></span>
+                    <span>Obsidian</span>
+                  </label>
+                  <label class="palette-choice">
+                    <input type="radio" name="palette" value="color" />
+                    <span class="palette-swatch color"><i></i></span>
+                    <span>Photo color</span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <div class="control-grid">
+                <label class="select-label" for="cropMode">
+                  <span>Image fit</span>
+                  <span class="select-wrap">
+                    <select id="cropMode">
+                      <option value="cover">Fill frame</option>
+                      <option value="contain">Fit whole image</option>
+                    </select>
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+                  </span>
+                </label>
+                <label class="select-label" for="gapSize">
+                  <span>Piece spacing</span>
+                  <span class="select-wrap">
+                    <select id="gapSize">
+                      <option value="1">Tight</option>
+                      <option value="2" selected>Balanced</option>
+                      <option value="3">Wide</option>
+                    </select>
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+                  </span>
+                </label>
+              </div>
+
+              <div class="control-group">
+                <div class="label-row">
+                  <label for="contrast">Contrast</label>
+                  <output id="contrastValue" for="contrast">110%</output>
+                </div>
+                <input id="contrast" class="range-control" type="range" min="70" max="160" step="5" value="110" />
+              </div>
+
+              <div class="toggle-list">
+                <label class="toggle-row">
+                  <span><strong>Soft dithering</strong><small>Smoother gradients between pip values</small></span>
+                  <input id="ditherToggle" type="checkbox" checked />
+                  <i aria-hidden="true"></i>
+                </label>
+                <label class="toggle-row">
+                  <span><strong>Invert tones</strong><small>Swap highlights and shadows</small></span>
+                  <input id="invertToggle" type="checkbox" />
+                  <i aria-hidden="true"></i>
+                </label>
+              </div>
+
+              <div class="control-actions">
+                <button class="button button-accent button-full" id="generateButton" type="button" disabled>
+                  Generate mosaic
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+                </button>
+                <button class="quiet-button" id="resetButton" type="button" disabled>Reset source</button>
+              </div>
+            </aside>
+
+            <section class="result-panel" aria-labelledby="result-title">
+              <div class="result-toolbar">
+                <div>
+                  <span class="status-dot" id="resultStatusDot"></span>
+                  <h3 id="result-title">Mosaic preview</h3>
+                  <span class="result-state" id="resultState">Waiting for a source</span>
+                </div>
+                <div class="view-switcher" role="group" aria-label="Preview view">
+                  <button type="button" data-view="source" aria-pressed="false" disabled>Source</button>
+                  <button class="active" type="button" data-view="mosaic" aria-pressed="true" disabled>Mosaic</button>
+                  <button type="button" data-view="split" aria-pressed="false" disabled>Split</button>
+                </div>
+              </div>
+
+              <div class="preview-frame">
+                <div class="ruler ruler-horizontal" id="horizontalRuler"><span>— dominoes across</span></div>
+                <div class="ruler ruler-vertical" id="verticalRuler"><span>— dominoes down</span></div>
+                <div class="preview-stage" id="previewStage" data-view="mosaic">
+                  <div class="preview-empty" id="previewEmpty">
+                    <div class="ghost-grid" aria-hidden="true">
+                      <span data-value="3"></span><span data-value="0"></span><span data-value="5"></span>
+                      <span data-value="1"></span><span data-value="4"></span><span data-value="2"></span>
+                    </div>
+                    <strong>Your mosaic will appear here</strong>
+                    <p>Upload a photo or enter text to generate a piece-by-piece preview.</p>
+                  </div>
+
+                  <div class="preview-panes" id="previewPanes" hidden>
+                    <figure class="preview-pane source-pane">
+                      <figcaption>Source</figcaption>
+                      <img id="sourcePreview" alt="Uploaded source" />
+                    </figure>
+                    <figure class="preview-pane mosaic-pane">
+                      <figcaption>Mosaic</figcaption>
+                      <canvas id="mosaicCanvas" role="img" aria-label="Generated domino mosaic"></canvas>
+                    </figure>
+                  </div>
+                </div>
+              </div>
+
+              <div class="result-summary">
+                <div class="stat-card stat-primary">
+                  <span>Dominoes used</span>
+                  <strong id="usedStat">—</strong>
+                  <small id="budgetStat">Choose a source to begin</small>
+                </div>
+                <div class="stat-card">
+                  <span>Across</span>
+                  <strong id="acrossStat">—</strong>
+                  <small>dominoes</small>
+                </div>
+                <div class="stat-card">
+                  <span>Down</span>
+                  <strong id="downStat">—</strong>
+                  <small>dominoes</small>
+                </div>
+                <div class="stat-card">
+                  <span>Est. footprint</span>
+                  <strong id="footprintStat">—</strong>
+                  <small>with 50 × 25 mm pieces</small>
+                </div>
+              </div>
+
+              <div class="result-footer">
+                <div class="formula-block">
+                  <span>Build formula</span>
+                  <strong id="buildFormula">Choose a source to calculate your grid</strong>
+                </div>
+                <button class="button button-dark" id="downloadButton" type="button" disabled>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 4v12m0 0 4.5-4.5M12 16l-4.5-4.5M5 20h14" />
+                  </svg>
+                  Download PNG
+                </button>
+              </div>
+
+              <details class="inventory-panel" id="inventoryPanel" aria-disabled="true" disabled inert>
+                <summary>
+                  <span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3" /><path d="M4 12h16" /><circle cx="9" cy="7.5" r="1" /><circle cx="15" cy="16.5" r="1" /></svg>
+                    Piece inventory
+                  </span>
+                  <span class="inventory-summary" id="inventorySummary">Generated after choosing a source</span>
+                  <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+                </summary>
+                <div class="inventory-content">
+                  <p id="inventoryNote">Pairs are grouped regardless of direction. One standard double-six set contains one of each pair.</p>
+                  <div class="inventory-grid" id="inventoryGrid"></div>
+                </div>
+              </details>
+            </section>
+          </div>
+
+          <p class="live-status visually-hidden" id="liveStatus" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="process-section page-width" id="how-it-works" aria-labelledby="process-title">
+        <div class="section-heading process-heading">
+          <div>
+            <p class="section-kicker">02 / From photo to plan</p>
+            <h2 id="process-title">How it works</h2>
+          </div>
+          <p>Seven values. Two faces. One image.</p>
+        </div>
+
+        <div class="process-grid">
+          <article class="process-card">
+            <span class="process-number">01</span>
+            <div class="process-icon image-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48"><rect x="5" y="8" width="38" height="32" rx="3" /><circle cx="16" cy="18" r="4" /><path d="m8 36 11-11 7 7 5-5 9 9" /></svg>
+            </div>
+            <h3>Choose your source</h3>
+            <p>Upload a clear photo or type a short phrase. Everything is processed locally in your browser.</p>
+          </article>
+          <article class="process-card featured">
+            <span class="process-number">02</span>
+            <div class="tone-scale" aria-label="Seven pip values from zero through six">
+              <span data-pip="0"></span><span data-pip="1"></span><span data-pip="2"></span><span data-pip="3"></span><span data-pip="4"></span><span data-pip="5"></span><span data-pip="6"></span>
+            </div>
+            <h3>Map light to pips</h3>
+            <p>Each half is sampled and translated into one of seven tonal values, from blank to six pips.</p>
+          </article>
+          <article class="process-card">
+            <span class="process-number">03</span>
+            <div class="process-icon plan-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48"><path d="M9 6h25l6 6v30H9z" /><path d="M34 6v7h6M15 21h18M15 28h18M15 35h11" /></svg>
+            </div>
+            <h3>Export your blueprint</h3>
+            <p>Download a crisp PNG, note the exact grid, and use the inventory to prepare a physical build.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="tip-strip">
+        <div class="page-width tip-inner">
+          <span class="tip-label">Studio tip</span>
+          <p>High-contrast portraits, simple silhouettes, and short bold phrases make the clearest mosaics.</p>
+          <a href="#studio">Try your photo <span>↑</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="page-width footer-inner">
+        <a class="brand footer-brand" href="#top" aria-label="Back to top">
+          <svg class="brand-mark" viewBox="0 0 48 28" aria-hidden="true">
+            <rect class="brand-domino-body" x="1" y="3" width="46" height="22" rx="5" />
+            <path class="brand-domino-divider" d="M24 5v18" />
+            <g class="brand-domino-pips">
+              <circle cx="9" cy="9" r="1.7" /><circle cx="17" cy="19" r="1.7" />
+              <circle cx="31" cy="9" r="1.7" /><circle cx="39" cy="9" r="1.7" />
+              <circle cx="31" cy="19" r="1.7" /><circle cx="39" cy="19" r="1.7" />
+            </g>
+          </svg>
+          <span>Mosaic<br />Studio 21</span>
+        </a>
+        <p>Designed for makers, artists, and satisfyingly ambitious weekends.</p>
+        <a class="back-top" href="#top">Back to top ↑</a>
+      </div>
+    </footer>
+  </body>
+</html>
