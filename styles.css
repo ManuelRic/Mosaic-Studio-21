@@ -146,13 +146,6 @@ a {
   text-transform: uppercase;
 }
 
-.brand-mark {
-  --mark-detail: var(--paper);
-  width: 44px;
-  color: var(--ink);
-  flex: 0 0 auto;
-}
-
 .brand-image {
   width: 38px;
   height: 38px;
@@ -160,24 +153,6 @@ a {
   object-fit: contain;
   background: transparent;
   filter: invert(1);
-}
-
-.brand-mark .brand-domino-body {
-  fill: currentColor;
-  stroke: none;
-}
-
-.brand-mark .brand-domino-divider {
-  fill: none;
-  stroke: var(--mark-detail);
-  stroke-linecap: round;
-  stroke-width: 1.5;
-  opacity: 0.68;
-}
-
-.brand-mark .brand-domino-pips circle {
-  fill: var(--mark-detail);
-  stroke: none;
 }
 
 .site-nav {
@@ -1863,9 +1838,8 @@ a {
   gap: 30px;
 }
 
-.footer-brand .brand-mark {
-  --mark-detail: var(--ink);
-  color: #eee9de;
+.footer-brand-image {
+  filter: none;
 }
 
 .footer-inner p {
