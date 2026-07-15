@@ -186,16 +186,17 @@ a {
   justify-self: end;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   padding: 8px 12px;
-  border: 1px solid var(--line);
-  border-radius: 99px;
   color: #56534d;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
+  text-transform: none;
 }
+
+.header-by { text-transform: lowercase; }
+.header-initials { text-transform: uppercase; }
 
 .hero {
   min-height: 595px;
@@ -357,9 +358,6 @@ a {
 .hero-art {
   position: relative;
   min-height: 420px;
-  perspective: 900px;
-  perspective-origin: 50% 46%;
-  transform-style: preserve-3d;
 }
 
 .hero-art::before {
@@ -378,11 +376,8 @@ a {
 .display-domino {
   --move-x: 0px;
   --move-y: 0px;
-  /* A tiny persistent Z value keeps the browser's compositing layer alive,
-     avoiding a one-frame flash when the hover animation settles. */
-  --lift-z: 0.01px;
-  --tilt-x: 0deg;
-  --tilt-y: 0deg;
+  --hover-scale: 1;
+  --hover-rotation: 0deg;
   --base-rotation: 0deg;
   --shadow-x: 16px;
   --shadow-y: 19px;
@@ -403,22 +398,11 @@ a {
     var(--soft-shadow-x) var(--soft-shadow-y) 25px rgba(23, 23, 20, 0.11);
   transform-origin: center;
   transform:
-    translate3d(var(--move-x), var(--move-y), var(--lift-z))
-    rotateZ(var(--base-rotation))
-    rotateX(var(--tilt-x))
-    rotateY(var(--tilt-y));
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  will-change: transform, box-shadow;
-  transition:
-    transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    box-shadow 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.hero-art.is-tracking .display-domino {
-  transition-duration: 90ms;
-  transition-timing-function: ease-out;
+    translate(var(--move-x), var(--move-y))
+    rotate(calc(var(--base-rotation) + var(--hover-rotation)))
+    scale(var(--hover-scale));
+  /* The domino stays in one 2D compositor layer throughout the interaction. */
+  will-change: transform;
 }
 
 .display-domino::after {

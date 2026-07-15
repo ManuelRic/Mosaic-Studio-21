@@ -96,73 +96,102 @@ function bindHeroArtParallax() {
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const pieces = [
-    { element: heroArt.querySelector(".domino-a"), move: 8, tilt: 3.5, lift: 15, shadow: 6 },
-    { element: heroArt.querySelector(".domino-b"), move: 14, tilt: 5.5, lift: 27, shadow: 10 },
-    { element: heroArt.querySelector(".domino-c"), move: 10, tilt: 4.3, lift: 19, shadow: 8 },
+    { element: heroArt.querySelector(".domino-a"), move: 8, tilt: 3.5, lift: 15 },
+    { element: heroArt.querySelector(".domino-b"), move: 14, tilt: 5.5, lift: 27 },
+    { element: heroArt.querySelector(".domino-c"), move: 10, tilt: 4.3, lift: 19 },
   ].filter((piece) => piece.element);
   let animationFrame = 0;
-  let resetFrame = 0;
+  let previousTime = 0;
   let latestPointer = null;
+  const motion = {
+    x: 0,
+    y: 0,
+    depth: 0,
+    targetX: 0,
+    targetY: 0,
+    targetDepth: 0,
+  };
 
-  const paint = () => {
-    animationFrame = 0;
-    if (!latestPointer || reduceMotion.matches) return;
-
-    const bounds = heroArt.getBoundingClientRect();
-    const x = clamp(((latestPointer.clientX - bounds.left) / bounds.width) * 2 - 1, -1, 1);
-    const y = clamp(((latestPointer.clientY - bounds.top) / bounds.height) * 2 - 1, -1, 1);
-    heroArt.classList.add("is-tracking");
-
-    pieces.forEach(({ element, move, tilt, lift, shadow }) => {
-      const shadowX = 16 - x * shadow;
-      const shadowY = 19 - y * shadow;
+  const paint = (x, y, depth) => {
+    pieces.forEach(({ element, move, tilt, lift }) => {
       element.style.setProperty("--move-x", `${(x * move).toFixed(2)}px`);
       element.style.setProperty("--move-y", `${(y * move * 0.72).toFixed(2)}px`);
-      element.style.setProperty("--lift-z", `${lift}px`);
-      element.style.setProperty("--tilt-x", `${(-y * tilt).toFixed(2)}deg`);
-      element.style.setProperty("--tilt-y", `${(x * tilt).toFixed(2)}deg`);
-      element.style.setProperty("--shadow-x", `${shadowX.toFixed(2)}px`);
-      element.style.setProperty("--shadow-y", `${shadowY.toFixed(2)}px`);
-      element.style.setProperty("--soft-shadow-x", `${(shadowX * 0.5).toFixed(2)}px`);
-      element.style.setProperty("--soft-shadow-y", `${(shadowY * 0.6).toFixed(2)}px`);
+      element.style.setProperty("--hover-scale", `${(1 + (lift / 900) * depth).toFixed(5)}`);
+      element.style.setProperty("--hover-rotation", `${((x - y * 0.35) * tilt * 0.25).toFixed(2)}deg`);
     });
+  };
+
+  const animate = (time) => {
+    animationFrame = 0;
+    if (reduceMotion.matches) return;
+
+    if (latestPointer) {
+      const bounds = heroArt.getBoundingClientRect();
+      motion.targetX = clamp(((latestPointer.clientX - bounds.left) / bounds.width) * 2 - 1, -1, 1);
+      motion.targetY = clamp(((latestPointer.clientY - bounds.top) / bounds.height) * 2 - 1, -1, 1);
+      latestPointer = null;
+    }
+
+    const elapsed = previousTime ? Math.min(time - previousTime, 64) : 16;
+    const response = motion.targetDepth ? 38 : 105;
+    const blend = 1 - Math.exp(-elapsed / response);
+    previousTime = time;
+
+    motion.x += (motion.targetX - motion.x) * blend;
+    motion.y += (motion.targetY - motion.y) * blend;
+    motion.depth += (motion.targetDepth - motion.depth) * blend;
+
+    const isSettled =
+      Math.abs(motion.targetX - motion.x) < 0.0005 &&
+      Math.abs(motion.targetY - motion.y) < 0.0005 &&
+      Math.abs(motion.targetDepth - motion.depth) < 0.0005;
+
+    if (isSettled) {
+      motion.x = motion.targetX;
+      motion.y = motion.targetY;
+      motion.depth = motion.targetDepth;
+      previousTime = 0;
+    }
+
+    paint(motion.x, motion.y, motion.depth);
+    if (!isSettled) animationFrame = requestAnimationFrame(animate);
+  };
+
+  const requestPaint = () => {
+    if (!animationFrame) animationFrame = requestAnimationFrame(animate);
+  };
+
+  const resetMotion = () => {
+    if (animationFrame) cancelAnimationFrame(animationFrame);
+    animationFrame = 0;
+    previousTime = 0;
+    latestPointer = null;
+    motion.x = 0;
+    motion.y = 0;
+    motion.depth = 0;
+    motion.targetX = 0;
+    motion.targetY = 0;
+    motion.targetDepth = 0;
+    paint(0, 0, 0);
   };
 
   heroArt.addEventListener("pointermove", (event) => {
     if (event.pointerType === "touch" || reduceMotion.matches) return;
-    if (resetFrame) {
-      cancelAnimationFrame(resetFrame);
-      resetFrame = 0;
-    }
-    latestPointer = event;
-    if (!animationFrame) animationFrame = requestAnimationFrame(paint);
+
+    latestPointer = { clientX: event.clientX, clientY: event.clientY };
+    motion.targetDepth = 1;
+    requestPaint();
   });
 
   heroArt.addEventListener("pointerleave", () => {
     latestPointer = null;
-    if (animationFrame) cancelAnimationFrame(animationFrame);
-    animationFrame = 0;
-    heroArt.classList.remove("is-tracking");
-    if (resetFrame) cancelAnimationFrame(resetFrame);
-
-    /* Wait one frame so the slower return transition is committed before
-       updating the transform. Keeping explicit values also prevents the
-       browser from destroying and recreating the compositing layer. */
-    resetFrame = requestAnimationFrame(() => {
-      resetFrame = 0;
-      pieces.forEach(({ element }) => {
-        element.style.setProperty("--move-x", "0px");
-        element.style.setProperty("--move-y", "0px");
-        element.style.setProperty("--lift-z", "0.01px");
-        element.style.setProperty("--tilt-x", "0deg");
-        element.style.setProperty("--tilt-y", "0deg");
-        element.style.setProperty("--shadow-x", "16px");
-        element.style.setProperty("--shadow-y", "19px");
-        element.style.setProperty("--soft-shadow-x", "8px");
-        element.style.setProperty("--soft-shadow-y", "12px");
-      });
-    });
+    motion.targetX = 0;
+    motion.targetY = 0;
+    motion.targetDepth = 0;
+    requestPaint();
   });
+
+  reduceMotion.addEventListener("change", resetMotion);
 }
 
 function bindEvents() {
